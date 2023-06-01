@@ -1,0 +1,34 @@
+from models import Quotes, Authors
+import json
+from conect import connect
+
+
+def load_json_quote_to_database(file_path):
+    with open(file_path, 'rb') as file:
+        data = json.load(file)
+        for item in data:
+            author_name = item['author']
+            author = Authors.objects(fullname=author_name).first()
+            print(author, type(author))
+            if not author:
+                author = Authors(fullname=author_name)
+                author.save()
+
+            quote = Quotes(author=author, quote=item['quote'], tags=item['tags'])
+            quote.save()
+
+
+
+
+def load_json_author_to_database(file_path):
+    with open(file_path, 'rb') as file:
+        data = json.load(file)
+        for item in data:
+            document = Authors(**item)
+            document.save()
+
+
+if __name__ == '__main__':
+
+    load_json_author_to_database('authors.json')
+    load_json_quote_to_database('quotes.json')
